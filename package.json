@@ -1,0 +1,44 @@
+{
+  "name": "zwu-xhsz-dlc",
+  "version": "0.6.1",
+  "description": "智慧思政（nxg.zwu.edu.cn）学生端写操作技能包 —— 「我的万里 AI 助手」DLC",
+  "type": "module",
+  "private": true,
+  "license": "GPL-3.0-only",
+  "keywords": [
+    "zwu",
+    "wanli",
+    "zhxg",
+    "smart-ideological-education",
+    "browser-agent",
+    "dlc"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node tests/xhsz-offline.mjs",
+    "install-dlc": "node install.mjs",
+    "check": "node install.mjs --check",
+    "uninstall": "node install.mjs --uninstall"
+  },
+  "peerDependencies": {
+    "zwu-ehallapp-assistant": ">=0.2.2"
+  },
+  "peerDependenciesMeta": {
+    "zwu-ehallapp-assistant": {
+      "optional": false
+    }
+  },
+  "files": [
+    "README.md",
+    "WORKFLOW.md",
+    "WRITE-SKILLS.md",
+    "INSTALL.md",
+    "CHANGELOG.md",
+    "manifest.json",
+    "install.mjs",
+    "src/",
+    "tests/"
+  ]
+}

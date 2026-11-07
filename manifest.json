@@ -1,0 +1,107 @@
+{
+  "id": "xhsz",
+  "name": "智慧思政（DLC）",
+  "nameEn": "Wanli Zhxg DLC",
+  "version": "0.6.1",
+  "contract": "zwu-series/1",
+  "seriesModuleId": "xhsz",
+  "requires": {
+    "assistantVersion": ">=0.2.2",
+    "contract": "zwu-series/1"
+  },
+  "provides": {
+    "tools": [
+      "xhsz_leave_types",
+      "xhsz_leave_draft",
+      "xhsz_leave_guard",
+      "xhsz_leave_submit",
+      "xhsz_leave_list",
+      "xhsz_leave_detail",
+      "xhsz_leave_close",
+      "xhsz_leave_resubmit_draft",
+      "xhsz_leave_resubmit",
+      "xhsz_workaid_opinion_draft",
+      "xhsz_workaid_opinion",
+      "xhsz_workaid_withdraw_draft",
+      "xhsz_workaid_withdraw",
+      "xhsz_guide",
+      "xhsz_form_actions",
+      "xhsz_form_draft",
+      "xhsz_form_submit"
+    ],
+    "risk": {
+      "xhsz_leave_types": "read",
+      "xhsz_leave_draft": "read",
+      "xhsz_leave_guard": "read",
+      "xhsz_leave_submit": "write",
+      "xhsz_leave_list": "read",
+      "xhsz_leave_detail": "read",
+      "xhsz_leave_close": "write",
+      "xhsz_leave_resubmit_draft": "read",
+      "xhsz_leave_resubmit": "write",
+      "xhsz_workaid_opinion_draft": "read",
+      "xhsz_workaid_opinion": "write",
+      "xhsz_workaid_withdraw_draft": "read",
+      "xhsz_workaid_withdraw": "write",
+      "xhsz_guide": "read",
+      "xhsz_form_actions": "read",
+      "xhsz_form_draft": "read",
+      "xhsz_form_submit": "write"
+    }
+  },
+  "permissions": {
+    "network": [
+      "https://nxg.zwu.edu.cn/api/*",
+      "https://nxg.zwu.edu.cn/fileServer/*"
+    ],
+    "storage": [
+      "token"
+    ],
+    "userscriptGrants": [
+      "GM_getValue",
+      "GM_setValue",
+      "GM_xmlhttpRequest"
+    ],
+    "backgroundBridge": {
+      "why": "按节次请假要读「上课啦」课表，接口在 ehallapp 域下，nxg 页面直接 fetch 会被 CORS 拦。只能请扩展的 service worker 代发（host_permissions 不受 CORS 限制，且能带上 ehallapp 的登录 cookie）。",
+      "message": "zwu.skl.fetch",
+      "allowPath": "/_layouts/15/ZWUWSBS/AppApi/{SKL/AttendanceApi,SKL/SchoolCalendarApi,System/AuthApi}.aspx",
+      "allowAction": [
+        "getSchoolWhichWeek",
+        "getSchoolSemester",
+        "getTeaDateCourseList",
+        "getStuCourseList",
+        "CurrentUser"
+      ],
+      "fallback": "油猴版没有 service worker → 课表查不到时自动退回按天请假，不阻塞流程"
+    }
+  },
+  "userscript": {
+    "match": [
+      "https://nxg.zwu.edu.cn/zhxg/*"
+    ],
+    "note": "新增的 @match 只用于 token 桥与页面内面板；课表读取依赖扩展后台，油猴版降级。"
+  },
+  "files": {
+    "src": [
+      "src/xhsz-api.ts",
+      "src/xhsz-token.ts",
+      "src/xhsz-leave.ts",
+      "src/xhsz-lessons.ts",
+      "src/xhsz-guide.ts",
+      "src/xhsz-form.ts",
+      "src/xhsz-render.ts",
+      "src/xhsz-tools.ts"
+    ],
+    "entry": "src/xhsz-tools.ts",
+    "registration": "在 src/series/all.ts 里加一行 import './xhsz-tools';"
+  },
+  "safety": {
+    "writeRequiresConfirm": true,
+    "confirmToken": "所有写工具必须带 confirm=true 且 draft 未过期（默认 10 分钟）",
+    "noBlindRetry": "提交超时不自动重试，只回读状态",
+    "draftSurvivesMissingMaterial": "501/502/503（缺导师/家长材料）不作废草稿：用户贴了材料可以用同一张草稿再提交，最多 3 次",
+    "noSelfInventedFields": "通用执行器只允许白名单 action + 该 action 声明的字段，多传一个键直接拒",
+    "timetableReadOnly": "课表代理只放行 4 个只读动作 + CurrentUser，路径写死，不接受调用方传 URL"
+  }
+}
